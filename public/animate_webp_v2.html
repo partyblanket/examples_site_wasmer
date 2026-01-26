@@ -34,6 +34,8 @@
     const context = canvas.getContext("2d");
     const stickyWrapper = document.querySelector(".sticky-wrapper");
     const scrollContainer = document.querySelector(".scroll-container");
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = "high";
 
     // CONFIGURATION
     const frameCount = 45; // Total number of WebP frames
@@ -87,23 +89,39 @@
 
     let isActive = false;
     let hasActivated = false;
-    let rafId = null;
+    let tickId = null;
+    let currentFrameFloat = 0;
+    let targetFrameIndex = 0;
+    const scrub = 0.25; // 0..1 (higher = snappier, lower = smoother)
 
-    const render = () => {
-        if (!isActive) return;
-
-        const progress = getScrollProgressInSection();
-        const frameIndex = Math.min(frameCount - 1, Math.floor(progress * frameCount));
-        drawFrame(frameIndex);
+    const requestTick = () => {
+        if (tickId !== null) return;
+        tickId = window.requestAnimationFrame(tick);
     };
 
-    const onScroll = () => {
+    const updateTargetFromScroll = () => {
         if (!isActive) return;
-        if (rafId !== null) return;
-        rafId = window.requestAnimationFrame(() => {
-            rafId = null;
-            render();
-        });
+        const progress = getScrollProgressInSection();
+        targetFrameIndex = Math.min(frameCount - 1, Math.floor(progress * frameCount));
+        requestTick();
+    };
+
+    const tick = () => {
+        tickId = null;
+        if (!isActive) return;
+
+        const delta = targetFrameIndex - currentFrameFloat;
+        if (Math.abs(delta) < 0.001) {
+            currentFrameFloat = targetFrameIndex;
+        } else {
+            currentFrameFloat += delta * scrub;
+        }
+
+        drawFrame(Math.round(currentFrameFloat));
+
+        if (currentFrameFloat !== targetFrameIndex) {
+            requestTick();
+        }
     };
 
     // Always show first frame initially (as a "poster")
@@ -124,7 +142,7 @@
                 if (fullyVisible) {
                     hasActivated = true;
                     isActive = true;
-                    render();
+                    updateTargetFromScroll();
                 } else {
                     // After activation, keep animating while any part is visible.
                     isActive = hasActivated && entry.isIntersecting;
@@ -137,11 +155,12 @@
     );
     observer.observe(stickyWrapper);
 
-    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scroll", updateTargetFromScroll, { passive: true });
     window.addEventListener("resize", () => {
-        if (isActive) render();
+        if (isActive) updateTargetFromScroll();
     });
 </script>
 
 </body>
 </html>
+
