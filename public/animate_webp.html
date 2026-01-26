@@ -37,9 +37,14 @@
 
     // CONFIGURATION
     const frameCount = 45; // Total number of WebP frames
+    const scrollSpeed = 1.5; // 1 = normal, >1 = faster, <1 = slower
+    const baseScrollHeightVh = 500; // matches the CSS default
     const currentFrame = index => (
         `https://raw.githubusercontent.com/olivier3lanc/Scroll-Frames/master/img/phone/frame-${index + 1}.webp`
     );
+
+    // If you speed up, reduce the scroll section height so the animation still ends at the bottom.
+    scrollContainer.style.height = `${baseScrollHeightVh / scrollSpeed}vh`;
 
     // Preload images into an array
     const images = [];
