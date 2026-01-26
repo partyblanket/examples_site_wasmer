@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <title>HTML Starter</title>
-    <meta name="description" content="A simple HTML starter page." />
+    <title>Examples</title>
+    <meta name="description" content="A list of example pages." />
 
     <style>
       :root {
@@ -169,26 +169,39 @@
 
       main {
         margin-top: 22px;
+      }
+
+      .grid {
+        list-style: none;
+        padding: 0;
+        margin: 0;
         display: grid;
-        grid-template-columns: repeat(12, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 16px;
       }
 
       .card {
-        grid-column: span 12;
         padding: 16px;
         border-radius: 16px;
         border: 1px solid var(--border);
         background: var(--panel);
       }
 
-      @media (min-width: 860px) {
-        .card--wide {
-          grid-column: span 8;
-        }
-        .card--side {
-          grid-column: span 4;
-        }
+      .card h2 {
+        margin: 0 0 8px;
+        font-size: 18px;
+        letter-spacing: -0.01em;
+      }
+
+      .card p {
+        margin: 0 0 14px;
+        color: var(--muted);
+      }
+
+      .card .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
       }
 
       code {
@@ -215,67 +228,72 @@
       <header>
         <div class="brand">
           <span class="dot" aria-hidden="true"></span>
-          <span>HTML Starter</span>
+          <span>Examples</span>
         </div>
         <nav aria-label="Primary">
-          <a class="pill" href="#about">About</a>
-          <a class="pill" href="#next">Next steps</a>
-          <a class="pill" href="#contact">Contact</a>
+          <a class="pill" href="#examples">Examples</a>
+          <a class="pill" id="githubRepoLink" href="#" target="_blank" rel="noreferrer">GitHub</a>
         </nav>
       </header>
 
       <section class="hero" aria-labelledby="title">
-        <h1 id="title">Your new `index.html` is ready.</h1>
+        <h1 id="title">Examples</h1>
         <p class="subtitle">
-          Edit this file to start building your page. The layout is responsive,
-          includes basic styling, and supports light/dark mode automatically.
+          Quick demos in <code>/public</code>.
         </p>
-        <div class="cta-row">
-          <a class="btn btn-primary" href="#next">Get started</a>
-          <a class="btn" href="https://developer.mozilla.org/">MDN Web Docs</a>
-        </div>
       </section>
 
-      <main>
-        <section id="about" class="card card--wide">
-          <h2>About</h2>
-          <p>
-            This is a lightweight starter with no dependencies. You can add your
-            own CSS file, JavaScript, or any framework later.
-          </p>
-          <p>
-            Tip: keep semantic elements like <code>&lt;header&gt;</code>,
-            <code>&lt;main&gt;</code>, and <code>&lt;footer&gt;</code> — they
-            improve accessibility and structure.
-          </p>
-        </section>
+      <main id="examples" aria-label="Example list">
+        <ul class="grid">
+          <li class="card">
+            <h2><a href="animate_mp4.html">animate_mp4</a></h2>
+            <p>Scroll to scrub an MP4 video timeline in a sticky section.</p>
+            <div class="actions">
+              <a class="btn btn-primary" href="animate_mp4.html">Open</a>
+              <a class="btn" data-github-path="public/animate_mp4.html" href="#">View on GitHub</a>
+            </div>
+          </li>
 
-        <aside id="next" class="card card--side">
-          <h2>Next steps</h2>
-          <ol>
-            <li>Change the title + text.</li>
-            <li>Add sections/cards as needed.</li>
-            <li>Optional: link a separate <code>styles.css</code>.</li>
-          </ol>
-        </aside>
+          <li class="card">
+            <h2><a href="animate_webp.html">animate_webp</a></h2>
+            <p>Scroll-driven frame-by-frame WebP sequence rendered to a canvas.</p>
+            <div class="actions">
+              <a class="btn btn-primary" href="animate_webp.html">Open</a>
+              <a class="btn" data-github-path="public/animate_webp.html" href="#">View on GitHub</a>
+            </div>
+          </li>
 
-        <section id="contact" class="card">
-          <h2>Contact</h2>
-          <p>
-            Replace this with your email or social links. Example:
-            <a href="mailto:hello@example.com">hello@example.com</a>
-          </p>
-        </section>
-        <section id="animation_image" class="">
-          
-        </section>
-
+          <li class="card">
+            <h2><a href="animate_webp_v2.html">animate_webp_v2</a></h2>
+            <p>Like <code>animate_webp</code>, but with smoother “scrub” easing between frames.</p>
+            <div class="actions">
+              <a class="btn btn-primary" href="animate_webp_v2.html">Open</a>
+              <a class="btn" data-github-path="public/animate_webp_v2.html" href="#">View on GitHub</a>
+            </div>
+          </li>
+        </ul>
       </main>
 
-      <footer>
-        <p>Built from a simple HTML template.</p>
-      </footer>
     </div>
+
+    <script>
+      // Set this once for correct “View on GitHub” links.
+      const GITHUB_REPO_URL = "https://github.com/partyblanket/examples_site_wasmer";
+
+      const normalizeRepoUrl = (url) => String(url || "").replace(/\/+$/, "");
+      const repo = normalizeRepoUrl(GITHUB_REPO_URL);
+
+      const repoLink = document.getElementById("githubRepoLink");
+      if (repoLink) repoLink.href = repo || "#";
+
+      for (const a of document.querySelectorAll("[data-github-path]")) {
+        const path = a.getAttribute("data-github-path");
+        a.target = "_blank";
+        a.rel = "noreferrer";
+        a.href = repo ? `${repo}/blob/main/${path}` : "#";
+        if (!repo) a.setAttribute("aria-disabled", "true");
+      }
+    </script>
   </body>
 </html>
 
