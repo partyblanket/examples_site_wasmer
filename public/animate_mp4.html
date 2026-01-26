@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scroll to Scrub Video</title>
+    <style>
+        body, html { margin: 0; padding: 0; font-family: sans-serif; }
+
+        /* The container sets the "depth" of the scroll (e.g., 5 screens tall) */
+        .scroll-section {
+            height: 500vh; 
+            background: #000;
+        }
+
+        /* Keeps the video element fixed in the viewport while scrolling */
+        .video-wrapper {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures video fills screen like a background */
+        }
+
+        .overlay-text {
+            position: absolute;
+            color: white;
+            font-size: 3rem;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scroll-section">
+        <div class="video-wrapper">
+            <video id="scrollVideo" playsinline muted preload="auto">
+                <!-- IMPORTANT: Use a video encoded with all keyframes (see below) -->
+                <source src="https://algaecookingclub.imgix.net/Homepage/bottle-transparent-v2-2k.mp4" type="video/mp4;codecs=hvc1">
+                <source src="https://algaecookingclub.imgix.net/Homepage/bottle-transparent-v2-2k.mp4" type="video/mp4">
+            </video>
+            <h1 class="overlay-text">Scroll to Explore</h1>
+        </div>
+    </div>
+
+    <div style="height: 100vh; background: white; display: flex; align-items: center; justify-content: center;">
+        <h2>End of Experience</h2>
+    </div>
+
+    <script>
+        const video = document.getElementById('scrollVideo');
+        const section = document.querySelector('.scroll-section');
+
+        const updateVideoTime = () => {
+            // Calculate how far we've scrolled inside the specific section
+            const distanceFromTop = window.pageYOffset - section.offsetTop;
+            const totalScrollableHeight = section.offsetHeight - window.innerHeight;
+            
+            // Calculate percentage (0 to 1)
+            let scrollFraction = distanceFromTop / totalScrollableHeight;
+            
+            // Constrain between 0 and 1
+            scrollFraction = Math.max(0, Math.min(scrollFraction, 1));
+
+            if (video.duration) {
+                video.currentTime = video.duration * scrollFraction;
+            }
+
+            requestAnimationFrame(updateVideoTime);
+        };
+
+        // Start the loop
+        requestAnimationFrame(updateVideoTime);
+    </script>
+</body>
+</html>
+

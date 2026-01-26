@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>HTML Starter</title>
+    <meta name="description" content="A simple HTML starter page." />
+
+    <style>
+      :root {
+        --bg: #0b1020;
+        --panel: rgba(255, 255, 255, 0.06);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.7);
+        --border: rgba(255, 255, 255, 0.12);
+        --accent: #7c5cff;
+        --accent2: #14b8a6;
+      }
+
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #f6f7fb;
+          --panel: rgba(10, 15, 30, 0.04);
+          --text: rgba(10, 15, 30, 0.92);
+          --muted: rgba(10, 15, 30, 0.7);
+          --border: rgba(10, 15, 30, 0.12);
+          --accent: #5b3fff;
+          --accent2: #0f766e;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+          Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        color: var(--text);
+        background: radial-gradient(
+            1200px 600px at 10% 10%,
+            rgba(124, 92, 255, 0.35),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 500px at 85% 20%,
+            rgba(20, 184, 166, 0.25),
+            transparent 55%
+          ),
+          var(--bg);
+        line-height: 1.5;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .container {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 32px 20px 56px;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 16px;
+        border: 1px solid var(--border);
+        background: var(--panel);
+        border-radius: 14px;
+        backdrop-filter: blur(10px);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+      }
+
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        box-shadow: 0 0 0 6px rgba(124, 92, 255, 0.15);
+      }
+
+      nav {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .pill {
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .hero {
+        margin-top: 26px;
+        padding: 28px 18px;
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.08),
+            rgba(255, 255, 255, 0.02)
+          ),
+          var(--panel);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(28px, 4vw, 44px);
+        letter-spacing: -0.02em;
+      }
+
+      .subtitle {
+        margin: 10px 0 0;
+        color: var(--muted);
+        max-width: 65ch;
+      }
+
+      .cta-row {
+        margin-top: 18px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.05);
+        font-weight: 600;
+      }
+
+      .btn-primary {
+        border-color: transparent;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        color: white;
+        box-shadow: 0 12px 30px rgba(124, 92, 255, 0.25);
+      }
+
+      main {
+        margin-top: 22px;
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 16px;
+      }
+
+      .card {
+        grid-column: span 12;
+        padding: 16px;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: var(--panel);
+      }
+
+      @media (min-width: 860px) {
+        .card--wide {
+          grid-column: span 8;
+        }
+        .card--side {
+          grid-column: span 4;
+        }
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+        font-size: 0.95em;
+        padding: 2px 6px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      footer {
+        margin-top: 28px;
+        color: var(--muted);
+        font-size: 14px;
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <header>
+        <div class="brand">
+          <span class="dot" aria-hidden="true"></span>
+          <span>HTML Starter</span>
+        </div>
+        <nav aria-label="Primary">
+          <a class="pill" href="#about">About</a>
+          <a class="pill" href="#next">Next steps</a>
+          <a class="pill" href="#contact">Contact</a>
+        </nav>
+      </header>
+
+      <section class="hero" aria-labelledby="title">
+        <h1 id="title">Your new `index.html` is ready.</h1>
+        <p class="subtitle">
+          Edit this file to start building your page. The layout is responsive,
+          includes basic styling, and supports light/dark mode automatically.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#next">Get started</a>
+          <a class="btn" href="https://developer.mozilla.org/">MDN Web Docs</a>
+        </div>
+      </section>
+
+      <main>
+        <section id="about" class="card card--wide">
+          <h2>About</h2>
+          <p>
+            This is a lightweight starter with no dependencies. You can add your
+            own CSS file, JavaScript, or any framework later.
+          </p>
+          <p>
+            Tip: keep semantic elements like <code>&lt;header&gt;</code>,
+            <code>&lt;main&gt;</code>, and <code>&lt;footer&gt;</code> — they
+            improve accessibility and structure.
+          </p>
+        </section>
+
+        <aside id="next" class="card card--side">
+          <h2>Next steps</h2>
+          <ol>
+            <li>Change the title + text.</li>
+            <li>Add sections/cards as needed.</li>
+            <li>Optional: link a separate <code>styles.css</code>.</li>
+          </ol>
+        </aside>
+
+        <section id="contact" class="card">
+          <h2>Contact</h2>
+          <p>
+            Replace this with your email or social links. Example:
+            <a href="mailto:hello@example.com">hello@example.com</a>
+          </p>
+        </section>
+        <section id="animation_image" class="">
+          
+        </section>
+
+      </main>
+
+      <footer>
+        <p>Built from a simple HTML template.</p>
+      </footer>
+    </div>
+  </body>
+</html>
+
