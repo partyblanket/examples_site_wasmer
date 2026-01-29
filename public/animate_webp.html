@@ -36,11 +36,12 @@
     const scrollContainer = document.querySelector(".scroll-container");
 
     // CONFIGURATION
-    const frameCount = 45; // Total number of WebP frames
+    const frameCount = 100; // Total number of WebP frames
     const scrollSpeed = 1.5; // 1 = normal, >1 = faster, <1 = slower
     const baseScrollHeightVh = 500; // matches the CSS default
     const currentFrame = index => (
-        `https://raw.githubusercontent.com/olivier3lanc/Scroll-Frames/master/img/phone/frame-${index + 1}.webp`
+        `/images/pepper_animate/frame_${(index + 1).toString().padStart(3, '0').slice(-3)}.webp`
+
     );
 
     // If you speed up, reduce the scroll section height so the animation still ends at the bottom.
@@ -54,18 +55,18 @@
         images.push(img);
     }
 
-    // Set canvas dimensions
-    canvas.width = 1920; 
-    canvas.height = 1080;
+    // Set canvas dimensions to viewport width and height
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
     const clamp01 = (n) => Math.max(0, Math.min(1, n));
 
     const getScrollProgressInSection = () => {
         const scrollY = window.pageYOffset;
         const start = scrollContainer.offsetTop;
-        // Use the full scroll-container range (including the un-sticking tail)
-        // so the animation doesn't finish before you reach the end of the section.
-        const end = start + scrollContainer.offsetHeight;
+        // Finish when the sticky section ends (bottom reaches viewport bottom).
+        const stickyRange = Math.max(0, scrollContainer.offsetHeight - window.innerHeight);
+        const end = start + stickyRange;
         if (end <= start) return 0;
         return clamp01((scrollY - start) / (end - start));
     };
@@ -76,14 +77,17 @@
 
         if (img.complete && img.naturalWidth > 0) {
             context.clearRect(0, 0, canvas.width, canvas.height);
-            // Center the image in the canvas (no scaling)
+            // Contain the canvas like CSS object-fit: contain
             const cw = canvas.width;
             const ch = canvas.height;
             const iw = img.naturalWidth;
             const ih = img.naturalHeight;
-            const dx = (cw - iw) / 2;
-            const dy = (ch - ih) / 2;
-            context.drawImage(img, dx, dy);
+            const scale = Math.min(cw / iw, ch / ih);
+            const dw = iw * scale;
+            const dh = ih * scale;
+            const dx = (cw - dw) / 2;
+            const dy = (ch - dh) / 2;
+            context.drawImage(img, dx, dy, dw, dh);
             return;
         }
 
@@ -144,6 +148,8 @@
 
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
         if (isActive) render();
     });
 </script>
