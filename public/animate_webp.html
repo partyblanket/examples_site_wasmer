@@ -36,24 +36,73 @@
     const scrollContainer = document.querySelector(".scroll-container");
 
     // CONFIGURATION
-    const frameCount = 100; // Total number of WebP frames
+    const frameCount = 104; // Total number of WebP frames
     const scrollSpeed = 1.5; // 1 = normal, >1 = faster, <1 = slower
     const baseScrollHeightVh = 500; // matches the CSS default
     const currentFrame = index => (
-        `/images/pepper_animate/frame_${(index + 1).toString().padStart(3, '0').slice(-3)}.webp`
+        `/images/pepper_animate/frame_${(index + 1).toString().padStart(4, '0').slice(-4)}.webp`
 
     );
 
     // If you speed up, reduce the scroll section height so the animation still ends at the bottom.
     scrollContainer.style.height = `${baseScrollHeightVh / scrollSpeed}vh`;
 
-    // Preload images into an array
-    const images = [];
-    for (let i = 0; i < frameCount; i++) {
+    // Preload a small set first, then progressively load the rest.
+    const images = new Array(frameCount);
+    const eagerFrames = Math.min(24, frameCount);
+    const maxConcurrentLoads = 4;
+    const backgroundQueue = [];
+
+    const loadImage = (index) => {
+        if (images[index]) return images[index];
         const img = new Image();
-        img.src = currentFrame(i);
-        images.push(img);
+        img.src = currentFrame(index);
+        images[index] = img;
+        return img;
+    };
+
+    const eagerIndices = new Set();
+    if (eagerFrames === frameCount) {
+        for (let i = 0; i < frameCount; i++) eagerIndices.add(i);
+    } else {
+        const step = (frameCount - 1) / (eagerFrames - 1);
+        for (let i = 0; i < eagerFrames; i++) {
+            eagerIndices.add(Math.round(i * step));
+        }
     }
+
+    for (const index of eagerIndices) {
+        loadImage(index);
+    }
+
+    for (let i = 0; i < frameCount; i++) {
+        if (!eagerIndices.has(i)) backgroundQueue.push(i);
+    }
+
+    let inFlightLoads = 0;
+    const scheduleBackgroundLoad = () => {
+        if (inFlightLoads >= maxConcurrentLoads) return;
+        const index = backgroundQueue.shift();
+        if (index === undefined) return;
+        inFlightLoads += 1;
+        const img = loadImage(index);
+        const done = () => {
+            inFlightLoads -= 1;
+            scheduleBackgroundLoad();
+        };
+        img.addEventListener("load", done, { once: true });
+        img.addEventListener("error", done, { once: true });
+        scheduleBackgroundLoad();
+    };
+
+    const defer = window.requestIdleCallback
+        ? window.requestIdleCallback
+        : (cb) => window.setTimeout(cb, 0);
+    defer(() => {
+        for (let i = 0; i < maxConcurrentLoads; i++) {
+            scheduleBackgroundLoad();
+        }
+    });
 
     // Set canvas dimensions to viewport width and height
     canvas.width = window.innerWidth;
@@ -72,7 +121,7 @@
     };
 
     const drawFrame = (index) => {
-        const img = images[index];
+        const img = loadImage(index);
         if (!img) return;
 
         if (img.complete && img.naturalWidth > 0) {
@@ -91,18 +140,28 @@
             return;
         }
 
-        img.addEventListener("load", () => drawFrame(index), { once: true });
+        img.addEventListener(
+            "load",
+            () => {
+                if (isActive && index === lastRequestedFrame) {
+                    drawFrame(index);
+                }
+            },
+            { once: true }
+        );
     };
 
     let isActive = false;
     let hasActivated = false;
     let rafId = null;
+    let lastRequestedFrame = 0;
 
     const render = () => {
         if (!isActive) return;
 
         const progress = getScrollProgressInSection();
         const frameIndex = Math.min(frameCount - 1, Math.floor(progress * frameCount));
+        lastRequestedFrame = frameIndex;
         drawFrame(frameIndex);
     };
 
