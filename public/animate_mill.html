@@ -3,7 +3,9 @@
 <head>
     <style>
         body { margin: 0; background: #000; }
-        .scroll-container { height: 500vh; } /* Controls scroll speed */
+        .scroll-container { 
+            height: 500vh; 
+        }
         .sticky-wrapper {
             position: sticky;
             top: 0;
@@ -12,6 +14,24 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            background: white;
+        }
+        .text-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            color: white;
+            font-size: 3rem;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            pointer-events: none;
+        }
+
+        .text-container--right {
+            justify-content: end;
         }
         canvas { width: 100%; height: 100%; object-fit: cover; }
     </style>
@@ -22,7 +42,13 @@
 </div>
 <div class="scroll-container">
     <div class="sticky-wrapper">
+        <div class="text-container text-container--left">
+            <h1>Mill</h1>
+        </div>
         <canvas id="scroll-canvas"></canvas>
+        <div class="text-container text-container--right">
+            <h1>Mill</h1>
+        </div>
     </div>
 </div>
 <div class="content" style="height: 100vh; background: white; display: flex; align-items: center; justify-content: center;">
@@ -36,15 +62,51 @@
     const scrollContainer = document.querySelector(".scroll-container");
 
     // CONFIGURATION
-    const frameCount = 104; // Total number of WebP frames
-    const scrollSpeed = 1.5; // 1 = normal, >1 = faster, <1 = slower
+    const frameCount = 73; // Total number of WebP frames
+    const scrollSpeed = 1; // 1 = normal, >1 = faster, <1 = slower
     const baseScrollHeightVh = 500; // matches the CSS default
+    const textArray = [{
+        startFrame: 0,
+        endFrame: 10,
+        textLeft: "Mill",
+        textRight: "Mill",
+    }, {
+        startFrame: 10,
+        endFrame: 20,
+        textLeft: "Mill 1",
+        textRight: "Mill 2",
+    }, {
+        startFrame: 30,
+        endFrame: 40,
+        textLeft: "Mill 5",
+        textRight: "Mill 6",
+    }, {
+        startFrame: 40,
+        endFrame: 50,
+        textLeft: "Mill 7",
+        textRight: "Mill 8",
+    }, {
+        startFrame: 50,
+        endFrame: 60,
+        textLeft: "Mill 9",
+        textRight: "Mill 10",
+    }, {
+        startFrame: 60,
+        endFrame: 70,
+        textLeft: "Mill 11",
+        textRight: "Mill 12",
+    }, {
+        startFrame: 70,
+        endFrame: 80,
+        textLeft: "Mill 13",
+        textRight: "Mill 14",
+    }];
     let baseUrl = "/";
     if(window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
         baseUrl = "/public/";
     }
     const currentFrame = index => (
-        `${baseUrl}images/pepper_animate/frame_${(index + 1).toString().padStart(4, '0').slice(-4)}.webp`
+        `${baseUrl}images/mill_animate/frame_${(index + 1).toString().padStart(4, '0').slice(-4)}.webp`
 
     );
 
@@ -167,6 +229,15 @@
         const frameIndex = Math.min(frameCount - 1, Math.floor(progress * frameCount));
         lastRequestedFrame = frameIndex;
         drawFrame(frameIndex);
+        updateText(frameIndex);
+    };
+
+    const updateText = (frameIndex) => {
+        const textContainerLeft = document.querySelector(".text-container--left");
+        const textContainerRight = document.querySelector(".text-container--right");
+        const activeItem = textArray.find(item => frameIndex >= item.startFrame && frameIndex <= item.endFrame);
+        textContainerLeft.textContent = activeItem?.textLeft || "";
+        textContainerRight.textContent = activeItem?.textRight || "";
     };
 
     const onScroll = () => {
